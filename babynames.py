@@ -46,7 +46,30 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
     # +++your code here+++
-    return
+    with open(filename, 'r') as f_obj:
+        year_header = re.search(r'Popularity in (\d\d\d\d)', f_obj.read())
+        year = year_header.group(1)
+        f_obj.seek(0)
+        name_row_template = \
+            r'<tr align="right"><td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>'
+        name_rows = re.findall(name_row_template, f_obj.read())
+        name_ranks = {}
+        for rank, boy_name, girl_name in name_rows:
+            try:
+                if rank < name_ranks[boy_name]:
+                    name_ranks[boy_name] = rank
+            except KeyError:
+                name_ranks[boy_name] = rank
+            try:
+                if rank < name_ranks[girl_name]:
+                    name_ranks[girl_name] = rank
+            except KeyError:
+                name_ranks[girl_name] = rank
+        baby_name_list = sorted(["{} {}".format(name, rank)
+                                 for name, rank in name_ranks.items()])
+        baby_name_list.insert(0, year)
+
+        return baby_name_list
 
 
 def main():
@@ -71,6 +94,10 @@ def main():
     # +++your code here+++
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
+    for filename in file_list:
+        rankings_for_year = extract_names(filename)
+        display_text = '\n'.join(rankings_for_year) + '\n'
+        print(display_text)
 
 
 if __name__ == '__main__':
