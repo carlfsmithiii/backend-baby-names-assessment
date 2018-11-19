@@ -97,7 +97,11 @@ def main():
     for filename in file_list:
         rankings_for_year = extract_names(filename)
         display_text = '\n'.join(rankings_for_year) + '\n'
-        print(display_text)
+        if create_summary:
+            with open(filename + '.summary', 'wt') as f_obj:
+                f_obj.write(display_text)
+        else:
+            print(display_text)
 
 
 if __name__ == '__main__':
